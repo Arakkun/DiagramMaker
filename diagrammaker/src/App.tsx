@@ -3,15 +3,22 @@ import './App.css';
 import "@fontsource/roboto" 
 import { SiteTabs } from './features/navigation/SiteTabs';
 import { ActiveTab } from './features/navigation/ActiveTab';
-import { Container } from '@material-ui/core'
+import { Container, createMuiTheme, ThemeProvider } from '@material-ui/core'
 
 function App() {
+  const darkTheme = createMuiTheme({
+    palette: {
+      type: 'dark',
+    },
+  });
   return (
     <div>
-      <SiteTabs />
-      <Container maxWidth="sm">
-        <ActiveTab />
-      </Container>
+      <ThemeProvider theme={darkTheme}>
+          <SiteTabs />
+          <Container maxWidth="sm">
+            <ActiveTab />
+          </Container>
+      </ThemeProvider>
     </div>
   );
 }
