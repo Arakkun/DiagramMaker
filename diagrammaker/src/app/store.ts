@@ -1,10 +1,13 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-// import counterReducer from '../features/counter/counterSlice';
+import elementsReducer from '../features/elements/elementsSlice';
+import linksReducer from '../features/elements/linksSlice';
 import tabReducer from '../features/navigation/tabSlice';
 
 export const store = configureStore({
   reducer: {
-    tab: tabReducer
+    tab: tabReducer,
+    elements: elementsReducer,
+    links: linksReducer
   },
 });
 
