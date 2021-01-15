@@ -7,6 +7,17 @@ It will be a site that permits
 ## Structure 
 ![Project Structure](./DiagramMaker.svg)
 Project will be made using React + Redux, because the variables in the diagram making part should be received from the entity creation part.
+Presentation will be managed by MaterialUI.
+- <b>Tab</b> is a 'string' pointing to the various possible tabs
+- <b>Entities</b> is an array of 
+ - <b>name</b>, a string 
+ - <b>entityId</b>, a integer id
+ - <b>imgLink</b>, link to an image on the web
+ - <b>styleTypeA</b>, <b>styleTypeB</b> are optional strings to support styles. A applies before B.
+- <b>Links</b> is an array of 
+ - <b>id</b>, id for the link
+ - <b>entityIdA</b>, <b>entityIdB</b>, IDs for the entities to be linked
+ - <b>styleTypeA</b>, <b>styleTypeB</b> are optional strings to support styles. A applies before B.
 
 ## Diagram settings:
 - Layout 
