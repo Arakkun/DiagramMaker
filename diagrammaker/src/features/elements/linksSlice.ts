@@ -2,7 +2,7 @@ import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
 
-type Link = {
+export type Link = {
     entityIdA: string,
     entityIdB: string,
     imgLink: string,

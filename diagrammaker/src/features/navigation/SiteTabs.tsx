@@ -15,7 +15,7 @@ export function SiteTabs() {
                     value={selectedTab}
                 >
                     <Tab value="home" icon={<HomeIcon />} />
-                    <Tab value="elements-manager" label="Entity Manager" />
+                    <Tab value="elements-manager" label="Elements Manager" />
                     <Tab value="diagram-manager" label="Diagram Manager" />
                     <Tab value="diagram-viewer" label="Diagram Viewer" />
                 </Tabs>

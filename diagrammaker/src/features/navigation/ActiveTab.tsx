@@ -1,32 +1,26 @@
 import { selectTab } from './tabSlice';
 import React from "react";
 import { useSelector } from 'react-redux';
+import { ElementsManager } from "../elements/ElementsManager"
 
 export function ActiveTab() {
     const selectedTab = useSelector(selectTab);
 
     switch(selectedTab){
         case 'elements-manager':
-            return(
-                <div>
-                    Elements Manager
-                </div>
-            )
-            break;
+            return <ElementsManager />
         case 'diagram-manager':
             return(
                 <div>
                     Diagram Manager
                 </div>
             )
-            break;
         case 'diagram-viewer':
             return(
                 <div>
                     Diagram Viewer
                 </div>
             )
-            break;
         case 'home':
         default:
             return(
@@ -34,6 +28,5 @@ export function ActiveTab() {
                     Home
                 </div>
             )
-            break;
     }
 }

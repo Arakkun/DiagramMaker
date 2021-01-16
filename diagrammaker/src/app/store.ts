@@ -1,12 +1,18 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import elementsReducer from '../features/elements/elementsSlice';
-import linksReducer from '../features/elements/linksSlice';
-import tabReducer from '../features/navigation/tabSlice';
+import { configureStore, ThunkAction, Action, EntityId, EntityState } from '@reduxjs/toolkit';
+import entitiesReducer, {Entity} from '../features/elements/entitySlice';
+import linksReducer, {Link} from '../features/elements/linksSlice';
+import tabReducer, {TabState} from '../features/navigation/tabSlice';
+
+export interface DefaultRootState {
+  tab: TabState,
+  entities: EntityState<Entity>,
+  links: EntityState<Link>
+}
 
 export const store = configureStore({
   reducer: {
     tab: tabReducer,
-    elements: elementsReducer,
+    entities: entitiesReducer,
     links: linksReducer
   },
 });
