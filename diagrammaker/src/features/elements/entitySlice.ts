@@ -1,5 +1,6 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { RootState } from '../../app/store';
+import { useSelector } from 'react-redux';
+import { DefaultRootState, RootState } from '../../app/store';
 
 export type Entity = {
     name: string,
@@ -32,4 +33,7 @@ export const {
     selectIds: selectEntitiesIds,
   } = entitiesAdapter.getSelectors<RootState>((state) => state.entities)
 
+export function useEntity(entityId:string){
+    return useSelector((state)=>selectEntitiesById(state as DefaultRootState, entityId)) as Entity;
+}
 export default entitiesSlice.reducer;

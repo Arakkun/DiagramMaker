@@ -1,7 +1,7 @@
 import { FormControl, FormLabel, Grid, InputLabel, MenuItem, Select, TextField, Button } from '@material-ui/core'
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { selectEntitiesIds, selectEntitiesById, entityUpsert, entityRemove, Entity } from './entitySlice';
+import { selectEntitiesIds, selectEntitiesById, entityUpsert, entityRemove, Entity, useEntity } from './entitySlice';
 import {v4 as uuid} from 'uuid'
 import { DefaultRootState } from '../../app/store';
 import { EntityId } from '@reduxjs/toolkit';
@@ -10,11 +10,6 @@ interface MenuItemEntityProps{
     entityId:string,
 }
 let initialState = uuid();
-
-
-function useEntity(entityId:string){
-    return useSelector((state)=>selectEntitiesById(state as DefaultRootState, entityId)) as Entity;
-}
 
 export function EntitiesForm(){
     const ids = useSelector(selectEntitiesIds) as string[]
