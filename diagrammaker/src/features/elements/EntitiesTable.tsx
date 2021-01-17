@@ -2,14 +2,14 @@ import React from 'react'
 import { DataGrid, ColDef, ValueFormatterParams, RowsProp } from '@material-ui/data-grid';
 import { Avatar, createStyles, makeStyles, Theme } from '@material-ui/core';
 import { useSelector } from 'react-redux';
-import { selectEntitiesIds, useEntity } from './entitySlice';
+import { selectAllEntities } from './entitySlice';
 
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     large: {
-      width: theme.spacing(7),
-      height: theme.spacing(7),
+      width: theme.spacing(6.5),
+      height: theme.spacing(6.5),
     },
   }),
 );
@@ -21,23 +21,23 @@ const ImagePrint = (value: string, name:string) => {
 
 const columns: ColDef[] = [
     {field: 'id', headerName:'entityId', hide:true},
-    {field: 'name', headerName: 'Name', flex:1},
+    {field: 'name', headerName: 'Name', flex:1.5},
     {
         field: 'imgLink', 
         headerName: 'Image', 
-        flex:1.5,
+        flex:0.8,
         renderCell: (params: ValueFormatterParams) => (
             ImagePrint(params.value as string,params.getValue("name") as string)
         )
     },
-    {field: 'styleTypeA', headerName: 'Stylistic Type A', flex:1},
-    {field: 'styleTypeB', headerName: 'Stylistic Type B', flex:1},
+    {field: 'styleTypeA', headerName: 'Stylistic Type A', flex:1.5},
+    {field: 'styleTypeB', headerName: 'Stylistic Type B', flex:1.5},
 ]
 
-export function EntitiesTab(){
-    const ids = useSelector(selectEntitiesIds);
-    const entities = ids.map((id, index)=>{
-        const entity = useEntity(id as string)
+export function EntitiesTable(){
+    const entities = useSelector(selectAllEntities);
+    const classes = useStyles();
+    const rows = entities.map((entity, index)=>{
         return {
             id: index,
             name: entity.name,
@@ -46,8 +46,20 @@ export function EntitiesTab(){
             styleTypeB: entity.styleTypeB,
         }
     })
+    const gridWrapperRef = React.useRef<HTMLDivElement>(null);
+        React.useLayoutEffect(() => {
+            const gridDiv = gridWrapperRef.current;
+            if (gridDiv){
+                const gridEl: HTMLDivElement = gridDiv.querySelector('div')!;
+                gridEl.style.height = '';
+                gridEl.style.width = '';
+            }
+        });
+
 
     return (
-        <DataGrid rows={entities} columns={columns} />
+      <div ref={gridWrapperRef}>
+        <DataGrid rows={rows} columns={columns} autoHeight={true} />
+      </div>
     )
 }
