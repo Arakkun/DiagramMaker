@@ -1,11 +1,12 @@
 import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
-import { RootState } from '../../app/store';
+import { useSelector } from 'react-redux';
+import { DefaultRootState, RootState } from '../../app/store';
 
 
 export type Link = {
     entityIdA: string,
     entityIdB: string,
-    imgLink: string,
+    linkId: string,
     styleTypeA: string,
     styleTypeB: string
 }
@@ -30,4 +31,7 @@ export const {
     selectIds: selectLinksIds,
   } = linksAdapter.getSelectors<RootState>((state) => state.links)
 
+export function useLink(linkId:string){
+    return useSelector((state)=>selectLinksById(state as DefaultRootState, linkId)) as Link;
+}
 export default linksSlice.reducer;

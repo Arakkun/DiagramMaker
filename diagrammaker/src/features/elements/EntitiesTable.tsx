@@ -58,7 +58,7 @@ export function EntitiesTable(){
 
 
     return (
-      <div ref={gridWrapperRef}>
+      <div ref={gridWrapperRef} style={{ width: '100%' }}>
         <DataGrid rows={rows} columns={columns} autoHeight={true} />
       </div>
     )

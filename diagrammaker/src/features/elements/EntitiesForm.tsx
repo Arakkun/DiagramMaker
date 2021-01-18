@@ -1,15 +1,19 @@
 import { FormControl, FormLabel, Grid, InputLabel, MenuItem, Select, TextField, Button } from '@material-ui/core'
 import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { selectEntitiesIds, selectEntitiesById, entityUpsert, entityRemove, Entity, useEntity } from './entitySlice';
+import { selectEntitiesIds, entityUpsert, entityRemove, useEntity } from './entitySlice';
 import {v4 as uuid} from 'uuid'
-import { DefaultRootState } from '../../app/store';
 import { EntityId } from '@reduxjs/toolkit';
 
 interface MenuItemEntityProps{
     entityId:string,
 }
 let initialState = uuid();
+
+export const MenuItemEntity:React.FC<MenuItemEntityProps> = ({entityId}) => {
+    const entity = useEntity(entityId)
+    return (<span>{entity.name}</span>)
+}
 
 export function EntitiesForm(){
     const ids = useSelector(selectEntitiesIds) as string[]
@@ -20,12 +24,6 @@ export function EntitiesForm(){
     const [entityId, setEntityId] = React.useState(initialState);
     const [initialId, setInitialId] = React.useState(initialState);
     const dispatch = useDispatch();
-    
-
-    const MenuItemEntity:React.FC<MenuItemEntityProps> = ({entityId}) => {
-        const entity = useEntity(entityId)
-        return (<div>{entity.name}</div>)
-    }
 
     const initialize = () => {
         setName("");
