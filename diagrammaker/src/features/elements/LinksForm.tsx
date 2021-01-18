@@ -19,7 +19,7 @@ interface MenuItemEntityCoupleProps{
 }
 
 export const LinkName:React.FC<MenuItemEntityCoupleProps> = ({entityIdA , entityIdB}) => {
-    return <div> <MenuItemEntity entityId={entityIdA} /> <ArrowForwardIosOutlined /> <MenuItemEntity entityId={entityIdB} /> </div>
+    return <span> <MenuItemEntity entityId={entityIdA} /> <ArrowForwardIosOutlined /> <MenuItemEntity entityId={entityIdB} /> </span>
 }
 
 export const MenuItemLink:React.FC<MenuItemLinkProps> = ({linkId}) => {
