@@ -41,7 +41,7 @@ export function EntitiesForm(){
         
     }
     const remove = () => {
-        dispatch(entityRemove(entityId as EntityId));
+        dispatch(entityRemove(entityId));
         initialize();
     }
 

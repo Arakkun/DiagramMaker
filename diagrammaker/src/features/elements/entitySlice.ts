@@ -1,6 +1,27 @@
-import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import { useSelector } from 'react-redux';
 import { DefaultRootState, RootState } from '../../app/store';
+import Dexie from 'dexie'
+
+// DB initialization
+
+class entitiesDb extends Dexie {
+
+    entities: Dexie.Table<Entity, string>
+
+    constructor(){
+        super("entities");
+        // to be used just as a storage! So indexing is not needed if not for entityId
+        this.version(1).stores({
+            entities: "entityId"
+        })
+        this.entities = this.table("entities");
+    }
+}
+
+const db = new entitiesDb();
+
+// Reducer
 
 export type Entity = {
     name: string,
@@ -15,17 +36,35 @@ const entitiesAdapter = createEntityAdapter<Entity>({
     sortComparer: (a,b) => a.name.localeCompare(b.name),
 })
 
+export const entityUpsert = createAsyncThunk('entities/entityUpsert', async (entity: Entity, thunkApi) => {
+    // upsert into db
+    db.entities.put(entity)
+    return entity
+  })
+
+export const entityRemove = createAsyncThunk('entities/entityRemove', async (entityId : string, thunkApi) => {
+    // remove from db
+    db.entities.delete(entityId)
+    return entityId
+  })
+
+  export const entityFetch = createAsyncThunk('entities/entityFetch', async (_,thunkApi) => {
+    // fetch all
+    var entities = await db.entities.toArray();
+    return entities;
+  })
+
 const entitiesSlice = createSlice({
     name: 'entities',
     initialState: entitiesAdapter.getInitialState(),
-    reducers:{
-        entityUpsert: entitiesAdapter.upsertOne,
-        entityRemove: entitiesAdapter.removeOne
+    reducers:{},
+    extraReducers:{
+        [entityFetch.fulfilled as any]: entitiesAdapter.upsertMany,
+        [entityUpsert.fulfilled as any]: entitiesAdapter.upsertOne,
+        [entityRemove.fulfilled as any]: entitiesAdapter.removeOne
     }
 })
 
-
-export const { entityUpsert, entityRemove } = entitiesSlice.actions;
 
 export const {
     selectAll: selectAllEntities,

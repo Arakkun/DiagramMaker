@@ -5,6 +5,12 @@ import App from './App';
 import { store } from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
+import { entityFetch } from './features/elements/entitySlice'
+import { linkFetch } from './features/elements/linksSlice'
+
+//Fetch Entities
+store.dispatch(entityFetch())
+store.dispatch(linkFetch())
 
 ReactDOM.render(
   <React.StrictMode>

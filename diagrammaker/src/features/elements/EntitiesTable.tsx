@@ -1,8 +1,8 @@
 import React from 'react'
-import { DataGrid, ColDef, ValueFormatterParams, RowsProp } from '@material-ui/data-grid';
+import { DataGrid, ColDef, ValueFormatterParams } from '@material-ui/data-grid';
 import { Avatar, createStyles, makeStyles, Theme } from '@material-ui/core';
 import { useSelector } from 'react-redux';
-import { selectAllEntities } from './entitySlice';
+import { selectAllEntities, entityFetch } from './entitySlice';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -55,8 +55,7 @@ export function EntitiesTable(){
                 gridEl.style.width = '';
             }
         });
-
-
+    
     return (
       <div ref={gridWrapperRef} style={{ width: '100%' }}>
         <DataGrid rows={rows} columns={columns} autoHeight={true} />

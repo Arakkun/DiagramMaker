@@ -58,7 +58,7 @@ export function LinksForm(){
         
     }
     const remove = () => {
-        dispatch(linkRemove(linkId as EntityId));
+        dispatch(linkRemove(linkId));
         initialize();
     }
     
@@ -135,7 +135,7 @@ export function LinksForm(){
                     </Button>
                 </Grid> 
                 <Grid item xs={6}> 
-                    <Button variant="contained" color="secondary" onClick={remove} disabled={((linkId!=initialId)&&(!validate())) ? false : true} fullWidth>
+                    <Button variant="contained" color="secondary" onClick={remove} disabled={(linkId!=initialId) ? false : true} fullWidth>
                         Delete
                     </Button>
                 </Grid> 
