@@ -1,4 +1,4 @@
-import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, Dictionary } from '@reduxjs/toolkit';
 import { useSelector } from 'react-redux';
 import { DefaultRootState, RootState } from '../../app/store';
 import Dexie from 'dexie'
@@ -27,7 +27,8 @@ export type Link = {
     entityIdB: string,
     linkId: string,
     styleTypeA: string,
-    styleTypeB: string
+    styleTypeB: string,
+    selected: number
 }
 
 const linksAdapter = createEntityAdapter<Link>({
@@ -69,6 +70,10 @@ export const {
     selectById: selectLinksById,
     selectIds: selectLinksIds,
   } = linksAdapter.getSelectors<RootState>((state) => state.links)
+
+export function useSelectedLinks(){
+    return useSelector(selectAllLinks).filter((link) => link.selected==1);
+}
 
 export function useLink(linkId:string){
     return useSelector((state)=>selectLinksById(state as DefaultRootState, linkId)) as Link;

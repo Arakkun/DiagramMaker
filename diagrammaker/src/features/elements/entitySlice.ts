@@ -75,4 +75,9 @@ export const {
 export function useEntity(entityId:string){
     return useSelector((state)=>selectEntitiesById(state as DefaultRootState, entityId)) as Entity;
 }
+
+export function useFilteredEntities(entitySet:Set<string>){
+    return useSelector(selectAllEntities).filter((entity) => entitySet.has(entity.entityId))
+}
+
 export default entitiesSlice.reducer;

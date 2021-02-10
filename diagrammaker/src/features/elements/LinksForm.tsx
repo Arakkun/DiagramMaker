@@ -53,7 +53,7 @@ export function LinksForm(){
     }
 
     const upsert = () => {
-        dispatch(linkUpsert({entityIdA, entityIdB, linkId, styleTypeA, styleTypeB}));
+        dispatch(linkUpsert({entityIdA, entityIdB, linkId, styleTypeA, styleTypeB, selected: 1}));
         initialize();
         
     }

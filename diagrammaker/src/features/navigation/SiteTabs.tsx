@@ -14,10 +14,8 @@ export function SiteTabs() {
                     onChange={(whatever,value)=>dispatch(changeTab(value))}
                     value={selectedTab}
                 >
-                    <Tab value="home" icon={<HomeIcon />} />
                     <Tab value="elements-manager" label="Elements Manager" />
                     <Tab value="diagram-manager" label="Diagram Manager" />
-                    <Tab value="diagram-viewer" label="Diagram Viewer" />
                 </Tabs>
             </Box>
         </AppBar>
