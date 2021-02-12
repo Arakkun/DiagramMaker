@@ -1,24 +1,31 @@
 import React from 'react'
 import { Entity } from '../elements/entitySlice'
-import { MenuItemLink } from '../elements/LinksForm';
 import { Link } from '../elements/linksSlice';
+import { TopologicalDiagram } from './TopologicalDiagram';
 
-interface Props {
+enum DiagramType {
+    Topological = "topological"
+}
+
+export interface DiagramProps {
     entities: Entity[],
-    links: Link[]
+    links: Link[],
+    diagramType?: DiagramType
 }
 
-export function DiagramPlayground({
-    entities,
-    links
-  }: Props){
-      
-    const entityList = entities.map((entity) => <p>{entity.name}</p>)
-    const linkList = links.map((link) => <p><MenuItemLink linkId={link.linkId}/></p>)
-    return (
-        <div>
-            {entityList}
-            {linkList}
-        </div>
-    )
+export interface DiagramEntity<T> {
+    object : T,
+    layer?: number, 
+    linkedEntities: Set<string>, 
+    linkedEntitiesCopy: Set<string>
 }
+
+export function DiagramPlayground(props: DiagramProps): JSX.Element{
+    switch(props.diagramType||DiagramType.Topological){
+        case DiagramType.Topological:
+            return <TopologicalDiagram {... props} />
+        default:
+            return <p>Not implemented</p>
+    }
+}
+
