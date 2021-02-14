@@ -1,12 +1,11 @@
-import { FormControl, FormLabel, Grid, InputLabel, MenuItem, Select, TextField, Button, FormHelperText } from '@material-ui/core'
+import { FormControl, FormLabel, Grid, InputLabel, MenuItem, Select, Button, FormHelperText, Checkbox } from '@material-ui/core'
 import { ArrowForwardIosOutlined } from '@material-ui/icons';
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { MenuItemEntity } from './EntitiesForm';
-import { selectEntitiesIds, useEntity } from './entitySlice'
+import { selectEntitiesIds } from './entitySlice'
 import { selectLinksIds, useLink, linkUpsert, linkRemove } from './linksSlice';
 import {v4 as uuid} from 'uuid'
-import { EntityId } from '@reduxjs/toolkit';
 
 
 interface MenuItemLinkProps{
@@ -35,25 +34,23 @@ export function LinksForm(){
     const [initialId, setInitialId] = React.useState(initialState);
     const [entityIdA, setEntityIdA] = React.useState("");
     const [entityIdB, setEntityIdB] = React.useState("");
-    const [styleTypeA, setStyleTypeA] = React.useState("");
-    const [styleTypeB, setStyleTypeB] = React.useState("");
+    const [selected, setSelected] = React.useState(1);
     const dispatch = useDispatch();
 
     const entityIds = useSelector(selectEntitiesIds)
     const linkIds = useSelector(selectLinksIds)
 
     const initialize = () => {
-        setStyleTypeA("");
-        setStyleTypeB("");
         setEntityIdA("");
         setEntityIdB("");
         initialState = uuid();
+        setSelected(1);
         setInitialId(initialState);
         setLinkId(initialState);
     }
 
     const upsert = () => {
-        dispatch(linkUpsert({entityIdA, entityIdB, linkId, styleTypeA, styleTypeB, selected: 1}));
+        dispatch(linkUpsert({entityIdA, entityIdB, linkId, selected}));
         initialize();
         
     }
@@ -67,17 +64,15 @@ export function LinksForm(){
     React.useEffect( 
         ()=> {
             if(selectedLink != null){
-                setStyleTypeA(selectedLink.styleTypeA);
-                setStyleTypeB(selectedLink.styleTypeB);
                 setEntityIdA(selectedLink.entityIdA);
                 setEntityIdB(selectedLink.entityIdB);
+                setSelected(selectedLink.selected);
             }
             else
             {
-                setStyleTypeA("");
-                setStyleTypeB("");
                 setEntityIdA("");
                 setEntityIdB("");
+                setSelected(1);
             }
         },
         [selectedLink]);
@@ -104,7 +99,7 @@ export function LinksForm(){
                         </Select>
                     </FormControl>
                 </Grid>
-                <Grid item xs={6}> 
+                <Grid item xs={5}> 
                     <FormControl variant="outlined" fullWidth>
                         <InputLabel>Entity</InputLabel>
                         <Select id="id" value={entityIdA} error={!validLinking()}  onChange={(e)=>(setEntityIdA(e.target.value as string))} >
@@ -113,7 +108,7 @@ export function LinksForm(){
                         <FormHelperText>Must be an entity different from the other</FormHelperText>
                     </FormControl>
                 </Grid> 
-                <Grid item xs={6}> 
+                <Grid item xs={5}> 
                     <FormControl variant="outlined" fullWidth>
                         <InputLabel>Other Entity</InputLabel>
                         <Select id="id" value={entityIdB} error={!validLinking()}  onChange={(e)=>(setEntityIdB(e.target.value as string))} >
@@ -122,13 +117,17 @@ export function LinksForm(){
                         <FormHelperText>Must be an entity different from the other</FormHelperText>
                     </FormControl>
                 </Grid> 
-                
-                <Grid item xs={6}> 
-                    <TextField value={styleTypeA} onChange={(e)=>setStyleTypeA(e.target.value)} id="styeTypeA" label="Style Type A" variant="outlined" fullWidth />
+                <Grid item xs={2}> 
+                    <FormControl variant="outlined" fullWidth>
+                        <Checkbox
+                            checked={(selected==1)}
+                            onChange={(e) => setSelected(e.target.checked?1:0)}
+                            name="checkedB"
+                            color="primary"
+                        />
+                        <FormHelperText>Selected</FormHelperText>
+                    </FormControl>
                 </Grid> 
-                <Grid item xs={6}> 
-                    <TextField value={styleTypeB} onChange={(e)=>setStyleTypeB(e.target.value)} id="styeTypeB" label="Style Type B" variant="outlined" fullWidth />
-                </Grid>
                 <Grid item xs={6}> 
                     <Button variant="contained" color="primary" onClick={upsert} disabled={!validate()} fullWidth >
                         {(linkId!=initialId)?"Update":"Insert"}

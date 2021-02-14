@@ -1,10 +1,10 @@
 import React from 'react'
-import { DataGrid, ColDef, ValueFormatterParams, RowsProp } from '@material-ui/data-grid';
+import { DataGrid, ColDef, ValueFormatterParams } from '@material-ui/data-grid';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 import { LinkName } from './LinksForm';
 import { selectAllLinks } from './linksSlice';
-
+import {CheckBoxOutlined , CheckBoxOutlineBlank} from '@material-ui/icons'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -30,8 +30,14 @@ const columns: ColDef[] = [
             renderLink(params.getValue("entityIdA") as string, params.getValue("entityIdB") as string)
         )
     },
-    {field: 'styleTypeA', headerName: 'Stylistic Type A', flex:1.5},
-    {field: 'styleTypeB', headerName: 'Stylistic Type B', flex:1.5},
+    {
+      field: 'selected', 
+      headerName: 'Selected', 
+      flex:1,
+      renderCell: (params: ValueFormatterParams) => (
+        params.getValue('selected')==1 ? <CheckBoxOutlined /> : <CheckBoxOutlineBlank /> 
+      )
+  }
 ]
 
 export function LinksTable(){
@@ -42,8 +48,7 @@ export function LinksTable(){
             entityIdA: link.entityIdA,
             entityIdB: link.entityIdB,
             linkId: link.linkId,
-            styleTypeA: link.styleTypeA,
-            styleTypeB: link.styleTypeB,
+            selected: link.selected
         }
     })
     const gridWrapperRef = React.useRef<HTMLDivElement>(null);

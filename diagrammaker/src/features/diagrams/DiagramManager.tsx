@@ -1,8 +1,10 @@
-import { Accordion, AccordionDetails, AccordionSummary, Grow, Typography, Box } from '@material-ui/core'
+import { Accordion, AccordionDetails, AccordionSummary, Typography, Box, Grid , FormControl, FormLabel, InputLabel, MenuItem, Select, FormHelperText, Checkbox } from '@material-ui/core'
 import React from 'react'
 import {ExpandMore} from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles';
 import { DiagramBox } from './DiagramBox';
+import { DiagramForm } from './DiagramForm';
+
 const useStyles = makeStyles((theme) => ({
     root: {
       width: '100%',
@@ -24,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function DiagramManager(){
     const classes = useStyles()
+
     return (
         <div>
 
@@ -32,25 +35,25 @@ export function DiagramManager(){
             <Accordion>
                 <AccordionSummary
                 expandIcon={<ExpandMore />}
-                id="acc1el-man"
+                id="acc1dia-man"
                 >
                     <Typography className={classes.heading}>Diagram Settings</Typography>
                     <Typography className={classes.secondaryHeading}>
-                        Add and view entities
+                        Choose the settings for the diagram
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    Choose settings for the diagram
+                    <DiagramForm />
                 </AccordionDetails>
             </Accordion>
             <Accordion>
                 <AccordionSummary
                 expandIcon={<ExpandMore />}
-                id="acc2el-man"
+                id="acc2dia-man"
                 >
                     <Typography className={classes.heading}>Diagram Viewer</Typography>
                     <Typography className={classes.secondaryHeading}>
-                        Add and view links
+                        View and Save Diagram
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>

@@ -26,8 +26,6 @@ export type Link = {
     entityIdA: string,
     entityIdB: string,
     linkId: string,
-    styleTypeA: string,
-    styleTypeB: string,
     selected: number
 }
 

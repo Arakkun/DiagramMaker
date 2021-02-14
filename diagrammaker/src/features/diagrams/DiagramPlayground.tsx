@@ -1,11 +1,8 @@
 import React from 'react'
 import { Entity } from '../elements/entitySlice'
 import { Link } from '../elements/linksSlice';
+import { DiagramType } from './diagramSettingsSlice';
 import { TopologicalDiagram } from './TopologicalDiagram';
-
-enum DiagramType {
-    Topological = "topological"
-}
 
 export interface DiagramProps {
     entities: Entity[],
@@ -13,9 +10,7 @@ export interface DiagramProps {
     diagramType?: DiagramType
 }
 
-export interface DiagramEntity<T> {
-    object : T,
-    layer?: number, 
+export interface DiagramEntity extends Entity {
     linkedEntities: Set<string>, 
     linkedEntitiesCopy: Set<string>
 }

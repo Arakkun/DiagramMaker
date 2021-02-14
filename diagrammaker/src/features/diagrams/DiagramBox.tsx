@@ -1,49 +1,49 @@
-import React, { useState, useEffect } from 'react'
-import { Button, Grid, Paper } from '@material-ui/core'
-import { Entity, selectAllEntities, useFilteredEntities } from '../elements/entitySlice';
-import { useSelector } from 'react-redux';
-import { Link, selectAllLinks } from '../elements/linksSlice';
+import { Button, Grid } from '@material-ui/core'
+import React, { useState } from 'react'
+import { useFilteredEntities } from '../elements/entitySlice';
+import { useSelectedLinks } from '../elements/linksSlice';
 import { DiagramPlayground } from './DiagramPlayground';
 
-export function DiagramBox(){
+export function DiagramBox() {
+
     const [printed, setPrinted] = useState(false);
     const [changed, setChanged] = useState(true);
     const [playground, setPlayground] = useState(<div />);
-    const links = useSelector(selectAllLinks);
+
     // when implementing filtering
-    // const links = useSelectedLinks();
+    const links = useSelectedLinks();
     let entitySet = new Set<string>();
-    for (let link of links){
+    for (let link of links) {
         entitySet.add(link.entityIdA)
         entitySet.add(link.entityIdB)
     }
 
     const entities = useFilteredEntities(entitySet);
-    
 
+    // We have to avoid rerendering this for any eventual change to the state
     const printDiagram = () => {
         setPrinted(true);
-        setChanged(false);   
+        setChanged(false);
         setPlayground(<DiagramPlayground entities={entities} links={links} />);
     };
-    
+
     const saveDiagram = () => {
         // save the diagram
     }
-    
+
     return (
-        <Grid container spacing={2}> 
-            <Grid item xs={6}> 
+        <Grid container spacing={2}>
+            <Grid item xs={6}>
                 <Button variant="contained" color="primary" onClick={printDiagram} disabled={printed || !changed} fullWidth >
                     Create
-                </Button>
+                            </Button>
             </Grid>
-            <Grid item xs={6}> 
+            <Grid item xs={6}>
                 <Button variant="contained" onClick={saveDiagram} disabled={!printed} fullWidth>
                     Save
-                </Button>
+                            </Button>
             </Grid>
-            <Grid item xs={12}> 
+            <Grid item xs={12}>
                 {playground}
             </Grid>
         </Grid>
