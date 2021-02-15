@@ -100,11 +100,11 @@ export function TopologicalDiagram({
                             positionA =  {getPosition(
                                 diagramEntities[link.entityIdA].layer as number, 
                                 diagramEntities[link.entityIdA].position as number, 
-                                counts, maxCount, entitySize, padding, orientation)}
+                                counts, maxCount, entitySize, padding, orientation, svgSize)}
                             positionB =  {getPosition(
                                 diagramEntities[link.entityIdB].layer as number, 
                                 diagramEntities[link.entityIdB].position as number, 
-                                counts, maxCount, entitySize, padding, orientation)}
+                                counts, maxCount, entitySize, padding, orientation, svgSize)}
                             layerA={diagramEntities[link.entityIdA].layer as number}
                             layerB={diagramEntities[link.entityIdB].layer as number}
                             svgSize={svgSize}
@@ -116,7 +116,7 @@ export function TopologicalDiagram({
                         style={entityStyle}
                         image={object.imgLink} 
                         id={id} 
-                        position={getPosition(object.layer as number, object.position as number, counts, maxCount, entitySize, padding, orientation)} 
+                        position={getPosition(object.layer as number, object.position as number, counts, maxCount, entitySize, padding, orientation, svgSize)} 
                         size={entitySize} />  ))}
                     
                 </svg>
@@ -148,7 +148,7 @@ export function TopologicalDiagram({
 
     }
 
-    function getPosition (layer:number, position:number, counts:number[], max_count:number, size:number, padding:number, orientation:Orientation):Position {
+    function getPosition (layer:number, position:number, counts:number[], max_count:number, size:number, padding:number, orientation:Orientation, svgSize:SvgSize):Position {
         // Returns width and height for the SVG object
         // calculating it for the toRight orientation
         let x = (layer+1)*padding + (layer+0.5)*size
@@ -156,13 +156,13 @@ export function TopologicalDiagram({
         let y = (position+1)*newPadding + (position+0.5)*size
         switch(orientation){
             case Orientation.toLeft:
-                return {x:-x, y:y}
+                return {x:svgSize.width-x, y:y}
             case Orientation.toRight:
                 return {x:x, y:y}
+            case Orientation.toDown:
+                return {x:y, y:x}
             case Orientation.toUp:
-                return {x:x, y:y}
-            case Orientation.toUp:
-                return {x:x, y:-y}
+                return {x:y, y:svgSize.height-x}
         }
         return {x:0, y:0}
     }

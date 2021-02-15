@@ -33,6 +33,9 @@ export function EntityElement(props: EntityProps): JSX.Element{
         default:
             mask = <Square position={props.position} size={props.size} />
             break;
+        case EntityStyle.RoundedSquare:
+            mask= <RoundedSquare  position={props.position} size={props.size} />
+            break;
         case EntityStyle.Circle:
             mask = <Circle position={props.position} size={props.size} />
             break;
@@ -49,13 +52,13 @@ export function EntityElement(props: EntityProps): JSX.Element{
 }
 
 function Square({position, size}:MaskProps){
-    return <rect x={position.x-size/2} y={position.y-size/2} width={size} height={size} fill="black" />
+    return <rect x={position.x-size/2} y={position.y-size/2} width={size} height={size} fill="white" />
 }
+
+function RoundedSquare({position, size}:MaskProps){
+    return <rect x={position.x-size/2} y={position.y-size/2} width={size} height={size} rx={size/4} fill="white" />
+}
+
 function Circle({position, size}:MaskProps){
-    return (
-        <g>
-            <rect x={position.x-size/2} y={position.y-size/2} width={size} height={size} fill="black" />
-            <circle cx={position.x} cy={position.y} r={size/2} fill="white" />
-        </g>
-    )
+    return <circle cx={position.x} cy={position.y} r={size/2} fill="white" />
 }

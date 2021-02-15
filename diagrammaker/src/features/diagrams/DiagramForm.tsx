@@ -1,10 +1,19 @@
-import { FormControl, FormLabel, Grid, InputLabel, MenuItem, Select, TextField } from '@material-ui/core'
+import { createStyles, FormControl, FormLabel, Grid, InputLabel, makeStyles, MenuItem, Select, Slider, TextField, Theme, Typography } from '@material-ui/core'
+import Color from 'color'
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { changeEntityStyle, changeFrom, changeLinkStyle, changeOrientation, changePadding, changeSize, changeType, ColorationStyle, DiagramType, Orientation } from './diagramSettingsSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectAllEntities } from '../elements/entitySlice'
+import { changeColor, changeColorList, changeEntityStyle, changeFrom, changeLinkStyle, changeOrientation, changePadding, changeSize, changeType, colorAssign, ColorationOrigin, ColorationStyle, DiagramType, Orientation } from './diagramSettingsSlice'
 import { EntityStyle } from './EntityElements'
 import { LinkStyle } from './LinkElements'
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    fullwidth: {
+      minWidth: "100%"
+    },
+  }),
+);
 
 export function DiagramForm() {
     const [type, setType] = useState(DiagramType.Topological)
@@ -13,39 +22,80 @@ export function DiagramForm() {
     const [orientation, setOrientation] = useState(Orientation.toRight)
     const [entityStyle, setEntityStyle] = useState(EntityStyle.Square)
     const [linkStyle, setLinkStyle] = useState(LinkStyle.Linear)
-    const [coloration, setColoration] = useState("Random")
-    const [from, setFrom] = useState(ColorationStyle.origin)
+    const [coloration, setColoration] = useState(ColorationStyle.Random)
+    const [from, setFrom] = useState(ColorationOrigin.origin)
+    const [colorList, setColorList] = useState({} as colorAssign)
+
     const dispatch = useDispatch();
+    const entities = useSelector(selectAllEntities)
+    const style = useStyles();
+    
     useEffect(() => {
         dispatch(changeType(type))
-    }, [type])
+    }, [type,dispatch])
     useEffect(() => {
         dispatch(changeSize(entitySize))
-    }, [entitySize])
+    }, [entitySize,dispatch])
     useEffect(() => {
         dispatch(changePadding(padding))
-    }, [padding])
+    }, [padding,dispatch])
     useEffect(() => {
         dispatch(changeOrientation(orientation))
-    }, [orientation])
+    }, [orientation,dispatch])
     useEffect(() => {
         dispatch(changeEntityStyle(entityStyle))
-    }, [entityStyle])
+    }, [entityStyle,dispatch])
     useEffect(() => {
         dispatch(changeLinkStyle(linkStyle))
-    }, [linkStyle])
+    }, [linkStyle,dispatch])
     useEffect(() => {
         dispatch(changeFrom(from))
-    }, [from])
+    }, [from,dispatch])
+    useEffect(() => {
+        let stylesSet:Set<string>;
+        switch(coloration){
+            case(ColorationStyle.Random):
+            case(ColorationStyle.Entity):
+                setColorList(entities.reduce((acc, entity) => ({ ...acc, [entity.entityId]: Color.rgb([255*Math.random(),255*Math.random(),255*Math.random()])}), {}))
+                break;
+            case(ColorationStyle.StyleA):
+                stylesSet = new Set<string>();
+                entities.map((entity)=> stylesSet.add(entity.styleTypeA));
+                setColorList(Array.from(stylesSet).reduce((acc, style) => ({ ...acc, [style]: Color.rgb([255*Math.random(),255*Math.random(),255*Math.random()])}), {}))
+                break;
+            case(ColorationStyle.StyleB):
+                stylesSet = new Set<string>();
+                entities.map((entity)=> stylesSet.add(entity.styleTypeB));
+                setColorList(Array.from(stylesSet).reduce((acc, style) => ({ ...acc, [style]: Color.rgb([255*Math.random(),255*Math.random(),255*Math.random()])}), {}))
+                break;
+        }
+        
+    }, [coloration, dispatch])
+    useEffect(()=> {
+        dispatch(changeColorList(colorList))
+    },[colorList, dispatch])
+
+    const setColor = (key:string) => (color: Color) => {
+        setColorList({...colorList, [key]:color});
+    }
+
+    let ColorPickers
+    if(coloration!=ColorationStyle.Random){
+        ColorPickers=Object.entries(colorList).map(([id, color],_)=>(
+            <Grid item xs={1}>
+                <ColorPicker label={id} color={color} onChangeComplete={(color) => setColor(id)(color)} />
+            </Grid>
+        ))
+    }
 
     return (
         <Grid container spacing={2}>
             <Grid alignItems="center" item sm={12}>
-                <FormControl>
+                <FormControl className={style.fullwidth}>
                     <FormLabel>
                         <p> Change Settings for the Diagram </p>
                     </FormLabel>
-                    <Grid container justify="space-between" spacing={1}> 
+                    <Grid container spacing={1}> 
                         <Grid item xs={6}>
                             <FormControl variant="outlined" fullWidth>
                                 <InputLabel>Type of the Diagram</InputLabel>
@@ -101,22 +151,22 @@ export function DiagramForm() {
                         <Grid item xs={6}>
                             <FormControl variant="outlined" fullWidth>
                                 <InputLabel>Type of Link Coloration</InputLabel>
-                                <Select id="id" value={coloration} onChange={(e) => (setColoration(e.target.value as string))} >
-                                    <MenuItem value="Random">Random</MenuItem>
-                                    <MenuItem value="StyleA">Based on Style A</MenuItem>
-                                    <MenuItem value="StyleB">Based on Style B</MenuItem>
-                                    <MenuItem value="Entity">Based on Entity</MenuItem>
+                                <Select id="id" value={coloration} onChange={(e) => (setColoration(e.target.value as ColorationStyle))} >
+                                    {Object.entries(ColorationStyle).map(([text, value], _) => <MenuItem value={value}>{text}</MenuItem>)}
                                 </Select>
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
                             <FormControl variant="outlined" fullWidth>
                                 <InputLabel>Where to take the color of the link from</InputLabel>
-                                <Select id="id" value={from} onChange={(e) => (setFrom(e.target.value as ColorationStyle))} >
-                                    {Object.entries(ColorationStyle).map(([text, value], _) => <MenuItem value={value}>{text}</MenuItem>)}
+                                <Select id="id" value={from} onChange={(e) => (setFrom(e.target.value as ColorationOrigin))} >
+                                    {Object.entries(ColorationOrigin).map(([text, value], _) => <MenuItem value={value}>{text}</MenuItem>)}
                                 </Select>
                             </FormControl>
                         </Grid>
+                        {ColorPickers}
+                        
+                        
                     </Grid>
                 </FormControl>
 
@@ -124,25 +174,74 @@ export function DiagramForm() {
         </Grid>
     )
 }
-/* <Grid item xs={6}>
-                    <TextField value={name} error={!validName()} helperText="Must have a name" onChange={(e)=>setName(e.target.value)} id="name" label="Name" variant="outlined" fullWidth />
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField value={imgLink} error={!validImg()} helperText="Must be an image" onChange={(e)=>setImgLink(e.target.value)} id="imgLink" label="Link of the image" variant="outlined" fullWidth />
-                </Grid>
-                <Grid item xs={6}>
-                    <TextField value={styleTypeA} onChange={(e)=>setStyleTypeA(e.target.value)} id="styeTypeA" label="Style Type A" variant="outlined" fullWidth />
-                </Grid>
-                <Grid item xs={6}>
-                    <TextField value={styleTypeB} onChange={(e)=>setStyleTypeB(e.target.value)} id="styeTypeB" label="Style Type B" variant="outlined" fullWidth />
-                </Grid>
-                <Grid item xs={6}>
-                    <Button variant="contained" color="primary" onClick={upsert} disabled={!validate()} fullWidth >
-                        {(entityId!=initialId)?"Update":"Insert"}
-                    </Button>
-                </Grid>
-                <Grid item xs={6}>
-                    <Button variant="contained" color="secondary" onClick={remove} disabled={(entityId!=initialId) ? false : true} fullWidth>
-                        Delete
-                    </Button>
-                </Grid>  */
+
+interface ColorPickerProps{
+    label: string,
+    color: Color,
+    onChangeComplete: (color: Color) => void
+}
+
+function ColorPicker({label, color, onChangeComplete}:ColorPickerProps): JSX.Element{
+
+    const [selectedColor, setSelectedColor] = useState(color);
+    const useStyles = makeStyles((theme: Theme) =>
+        createStyles({
+            colorViewer: {
+            height: "100px",
+            backgroundColor: selectedColor.hex()
+            },
+            redSlider: {
+                color: Color.rgb(selectedColor.red(),0,0).hex()
+            },
+            greenSlider: {
+                color: Color.rgb(0,selectedColor.green(),0).hex()
+            },
+            blueSlider: {
+                color: Color.rgb(0,0,selectedColor.blue()).hex()
+            },
+            limitText: {
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                whiteSpace: "nowrap"
+            }
+        }),
+    );
+
+    const style = useStyles();
+    return( 
+        <Grid container spacing={1}> 
+            <Typography align={"center"} className={style.limitText} gutterBottom>{label}</Typography>
+            <Grid item xs={12}>
+                <div className={style.colorViewer} />
+            </Grid>
+            <Grid item xs={2}>
+                <Typography>R</Typography>
+            </Grid>
+            <Grid item xs={10}>
+                <Slider 
+                    min={0} max={255} value={selectedColor.red()}
+                    onChange={(_,value)=>setSelectedColor(selectedColor.red(value as number))} 
+                    onChangeCommitted={(event,value) => onChangeComplete(selectedColor) } className={style.redSlider} />
+            </Grid>
+            <Grid item xs={2}>
+                <Typography>G</Typography>
+            </Grid>
+            <Grid item xs={10}>
+                <Slider 
+                    min={0} max={255} value={selectedColor.green()} 
+                    onChange={(_,value)=>setSelectedColor(selectedColor.green(value as number))} 
+                    onChangeCommitted={(event,value) => onChangeComplete(selectedColor) } className={style.greenSlider}/>
+            </Grid>
+            <Grid item xs={2}>
+                <Typography>B</Typography>
+            </Grid>
+            <Grid item xs={10}>
+                <Slider 
+                    min={0} max={255} value={selectedColor.blue()} 
+                    onChange={(_,value)=>setSelectedColor(selectedColor.blue(value as number))}
+                    onChangeCommitted={(event,value) => onChangeComplete(selectedColor) } className={style.blueSlider} 
+                />
+            </Grid>
+        </Grid>
+    )
+}

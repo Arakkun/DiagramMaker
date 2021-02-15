@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import Color from 'color';
 import { RootState } from '../../app/store';
 import { EntityStyle } from './EntityElements';
 import { LinkStyle } from './LinkElements';
@@ -13,11 +14,21 @@ export enum Orientation{
   toUp = "toUp",
   toDown = "toDown"
 }
-export enum ColorationStyle{
+export enum ColorationOrigin{
   origin = "Origin of Link",
   destination = "Destination of Link"
 }
 
+export enum ColorationStyle{
+  Random = "Random",
+  StyleA = "Based on Style A",
+  StyleB = "Based on Style B",
+  Entity = "Based on Entity"
+}
+
+export interface colorAssign{
+  [id:string]:Color
+}
 export interface DiagramSettingsState {
   type: DiagramType,
   entitySize: number,
@@ -25,10 +36,13 @@ export interface DiagramSettingsState {
   orientation: Orientation,
   entityStyle: EntityStyle,
   linkStyle: LinkStyle,
-  coloration: Record<string, string> | null,
-  from: ColorationStyle,
-  changed: boolean
+  colorationStyle: ColorationStyle,
+  from: ColorationOrigin,
+  changed: boolean,
+  colors: colorAssign
 }
+
+
 
 const initialState: DiagramSettingsState = {
   type: DiagramType.Topological,
@@ -37,9 +51,10 @@ const initialState: DiagramSettingsState = {
   orientation: Orientation.toRight,
   entityStyle: EntityStyle.Square,
   linkStyle: LinkStyle.Linear,
-  coloration: null,
-  from: ColorationStyle.origin,
-  changed: true
+  colorationStyle: ColorationStyle.Random,
+  from: ColorationOrigin.origin,
+  changed: true,
+  colors: {}
 };
 
 export const diagramSettingsSlice = createSlice({
@@ -70,8 +85,16 @@ export const diagramSettingsSlice = createSlice({
       state.linkStyle = action.payload;
       state.changed = true;
     },
-    changeColoration: (state, action) => {
-      state.coloration = action.payload;
+    changeColorationStyle: (state, action) => {
+      state.colorationStyle = action.payload
+      state.changed = true;
+    },
+    changeColor: (state, action) => {
+      state.colors = {...state.colors, ...action.payload}
+      state.changed = true;
+    },
+    changeColorList: (state, action) => {
+      state.colors =  action.payload
       state.changed = true;
     },
     changeFrom: (state, action) =>{
@@ -84,7 +107,8 @@ export const diagramSettingsSlice = createSlice({
   },
 });
 
-export const { changeType, changeSize, changePadding, changeOrientation, changeEntityStyle, changeLinkStyle, changeColoration, changeFrom, diagramPrinted } = diagramSettingsSlice.actions;
+export const { changeType, changeSize, changePadding, changeOrientation, changeEntityStyle, changeLinkStyle, changeColorationStyle, 
+  changeFrom, diagramPrinted, changeColor, changeColorList } = diagramSettingsSlice.actions;
 
 export const selectType = (state: RootState) => state.diagramSettings.type;
 export const selectEntitySize = (state: RootState) => state.diagramSettings.entitySize;
@@ -92,9 +116,10 @@ export const selectPadding = (state: RootState) => state.diagramSettings.padding
 export const selectOrientation = (state: RootState) => state.diagramSettings.orientation;
 export const selectEntityStyle = (state: RootState) => state.diagramSettings.entityStyle;
 export const selectLinkStyle = (state: RootState) => state.diagramSettings.linkStyle;
-export const selectColoration = (state: RootState) => state.diagramSettings.coloration;
+export const selectColoration = (state: RootState) => state.diagramSettings.colorationStyle;
 export const selectFrom = (state: RootState) => state.diagramSettings.from;
 export const selectChanged = (state:RootState) => state.diagramSettings.changed;
+export const selectColors = (state:RootState) => state.diagramSettings.colors;
 export const selectWholeSettings = (state:RootState) => state.diagramSettings
 
 export default diagramSettingsSlice.reducer;

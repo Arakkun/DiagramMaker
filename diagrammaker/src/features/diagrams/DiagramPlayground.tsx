@@ -1,13 +1,16 @@
 import React from 'react'
 import { Entity } from '../elements/entitySlice'
 import { Link } from '../elements/linksSlice';
-import { DiagramType } from './diagramSettingsSlice';
+import { DiagramType, DiagramSettingsState } from './diagramSettingsSlice';
 import { TopologicalDiagram } from './TopologicalDiagram';
 
 export interface DiagramProps {
     entities: Entity[],
-    links: Link[],
-    diagramType?: DiagramType
+    links: Link[]
+}
+
+export interface DiagramPlaygroundProps extends DiagramProps, DiagramSettingsState{
+
 }
 
 export interface DiagramEntity extends Entity {
@@ -15,8 +18,8 @@ export interface DiagramEntity extends Entity {
     linkedEntitiesCopy: Set<string>
 }
 
-export function DiagramPlayground(props: DiagramProps): JSX.Element{
-    switch(props.diagramType||DiagramType.Topological){
+export function DiagramPlayground(props: DiagramPlaygroundProps): JSX.Element{
+    switch(props.type||DiagramType.Topological){
         case DiagramType.Topological:
             return <TopologicalDiagram {... props} />
         default:
