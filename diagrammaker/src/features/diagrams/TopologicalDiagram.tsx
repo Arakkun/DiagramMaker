@@ -4,7 +4,7 @@ import {DiagramProps, DiagramEntity} from './DiagramPlayground'
 import {EntityStyle, Position, EntityElement} from './EntityElements'
 import { LinkElement, LinkStyle } from './LinkElements';
 import  Color from 'color'
-import { Orientation } from './diagramSettingsSlice';
+import { colorAssign, ColorationOrigin, ColorationStyle, Orientation } from './diagramSettingsSlice';
 
 export interface TopologicalProps extends DiagramProps {
     entitySize?: number, // size of the entity in diagram
@@ -12,7 +12,9 @@ export interface TopologicalProps extends DiagramProps {
     orientation?: Orientation, // to where the higher layers should be
     entityStyle?: EntityStyle, // what kind of style should the box be
     padding?: number // space between entities
-    coloration?: Record<string, string> | null
+    colorationStyle?: ColorationStyle,
+    from?: ColorationOrigin,
+    colors?: colorAssign
 }
 
 interface TopologicalDiagramEntity extends DiagramEntity {
@@ -28,7 +30,9 @@ export function TopologicalDiagram({
     orientation=Orientation.toRight,
     entityStyle=EntityStyle.Circle,
     padding=50,
-    coloration=null
+    colorationStyle=ColorationStyle.Random,
+    from=ColorationOrigin.origin,
+    colors={}
   }: TopologicalProps): JSX.Element{
         // We assign each layer level from the last, so if A>B, A>C, C>E and D>E 
         // layers will be, from the lowest:
@@ -36,6 +40,7 @@ export function TopologicalDiagram({
         let diagramEntities:Record<string, TopologicalDiagramEntity> = {};
         let entitiesToAssign = new Set<string>();
         entities.map((entity) => {
+            console.log(entity.styleTypeA)
             diagramEntities[entity.entityId] = { ...entity, linkedEntities: new Set<string>(), linkedEntitiesCopy: new Set<string>()};
             entitiesToAssign.add(entity.entityId);
         });
@@ -80,21 +85,42 @@ export function TopologicalDiagram({
                 counts[layer] = 0;
             }
             let maxCount:number = 0;
-            let color:Record<string, string> = {};
-            Object.entries(diagramEntities).forEach(([entity,_]) => {
-                let layer = diagramEntities[entity].layer as number + layers-1;
-                diagramEntities[entity].layer = layer
-                diagramEntities[entity].position = counts[layer]
+            let entityColor:colorAssign = {};
+            console.log(diagramEntities)
+            Object.entries(diagramEntities).forEach(([entityId,entity]) => {
+                let layer = entity.layer as number + layers-1;
+                entity.layer = layer
+                entity.position = counts[layer]
                 counts[layer] = counts[layer] + 1;
+                console.log("prima dello switch/case")
+                console.log(entity) // logga correttamente
                 if(counts[layer]>maxCount) maxCount = counts[layer];
-                color[entity] = Color.rgb([255*Math.random(),255*Math.random(),255*Math.random()]).hex()
+                switch(colorationStyle){
+                    case ColorationStyle.Random:
+                    case ColorationStyle.Entity:
+                        entityColor[entityId] = colors[entityId];
+                        break;
+                    case ColorationStyle.StyleA:
+                        console.log("durante switch/case")
+                        console.log(entity) // Non logga nulla
+                        entityColor[entityId] = colors[entity.styleTypeA];
+                        break;
+                    case ColorationStyle.StyleB:
+                        entityColor[entityId] = colors[entity.styleTypeB];
+                        break;
+                }
+                console.log("dopo lo switch/case")
+                console.log(entity) // logga correttamente
+                
             })
 
             let svgSize = getSize(entitySize, padding, orientation, layers, maxCount)
-
-            console.log("links: "+links.length)
+            console.log("colors")
+            console.log(colors)
+            console.log("color")
+            console.log(entityColor)
             return (
-                <svg width={svgSize.width} height={svgSize.height}>
+                <svg width={svgSize.width} height={svgSize.height} id="SVGDiagram">
                     {links.map((link)=>(<LinkElement
                             style={linkStyle}
                             positionA =  {getPosition(
@@ -109,7 +135,8 @@ export function TopologicalDiagram({
                             layerB={diagramEntities[link.entityIdB].layer as number}
                             svgSize={svgSize}
                             orientation={orientation}
-                            strokeColor={color[link.entityIdA]}
+                            strokeColor={entityColor[(from==ColorationOrigin.origin ? link.entityIdA : link.entityIdB)].hex()}
+                            padding={padding}
                         />)
                     )}
                     {Object.entries(diagramEntities).map(([id, object]) => ( <EntityElement 
@@ -164,5 +191,4 @@ export function TopologicalDiagram({
             case Orientation.toUp:
                 return {x:y, y:svgSize.height-x}
         }
-        return {x:0, y:0}
     }

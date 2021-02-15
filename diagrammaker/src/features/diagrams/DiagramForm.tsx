@@ -2,8 +2,8 @@ import { createStyles, FormControl, FormLabel, Grid, InputLabel, makeStyles, Men
 import Color from 'color'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectAllEntities } from '../elements/entitySlice'
-import { changeColor, changeColorList, changeEntityStyle, changeFrom, changeLinkStyle, changeOrientation, changePadding, changeSize, changeType, colorAssign, ColorationOrigin, ColorationStyle, DiagramType, Orientation } from './diagramSettingsSlice'
+import { Entity, selectEntityDictionary } from '../elements/entitySlice'
+import { changeColorationStyle, changeColorList, changeEntityStyle, changeFrom, changeLinkStyle, changeOrientation, changePadding, changeSize, changeType, colorAssign, ColorationOrigin, ColorationStyle, DiagramType, Orientation } from './diagramSettingsSlice'
 import { EntityStyle } from './EntityElements'
 import { LinkStyle } from './LinkElements'
 
@@ -27,7 +27,7 @@ export function DiagramForm() {
     const [colorList, setColorList] = useState({} as colorAssign)
 
     const dispatch = useDispatch();
-    const entities = useSelector(selectAllEntities)
+    const entities = useSelector(selectEntityDictionary)
     const style = useStyles();
     
     useEffect(() => {
@@ -56,20 +56,20 @@ export function DiagramForm() {
         switch(coloration){
             case(ColorationStyle.Random):
             case(ColorationStyle.Entity):
-                setColorList(entities.reduce((acc, entity) => ({ ...acc, [entity.entityId]: Color.rgb([255*Math.random(),255*Math.random(),255*Math.random()])}), {}))
+                setColorList(Object.entries(entities).reduce((acc, [id,_]) => ({ ...acc, [id]: Color.rgb([255*Math.random(),255*Math.random(),255*Math.random()])}), {}))
                 break;
             case(ColorationStyle.StyleA):
                 stylesSet = new Set<string>();
-                entities.map((entity)=> stylesSet.add(entity.styleTypeA));
+                Object.entries(entities).map(([_,entity])=> stylesSet.add((entity as Entity).styleTypeA));
                 setColorList(Array.from(stylesSet).reduce((acc, style) => ({ ...acc, [style]: Color.rgb([255*Math.random(),255*Math.random(),255*Math.random()])}), {}))
                 break;
             case(ColorationStyle.StyleB):
                 stylesSet = new Set<string>();
-                entities.map((entity)=> stylesSet.add(entity.styleTypeB));
+                Object.entries(entities).map(([_,entity])=> stylesSet.add((entity as Entity).styleTypeB));
                 setColorList(Array.from(stylesSet).reduce((acc, style) => ({ ...acc, [style]: Color.rgb([255*Math.random(),255*Math.random(),255*Math.random()])}), {}))
                 break;
         }
-        
+        dispatch(changeColorationStyle(coloration));
     }, [coloration, dispatch])
     useEffect(()=> {
         dispatch(changeColorList(colorList))
@@ -81,11 +81,16 @@ export function DiagramForm() {
 
     let ColorPickers
     if(coloration!=ColorationStyle.Random){
-        ColorPickers=Object.entries(colorList).map(([id, color],_)=>(
-            <Grid item xs={1}>
-                <ColorPicker label={id} color={color} onChangeComplete={(color) => setColor(id)(color)} />
-            </Grid>
-        ))
+        ColorPickers=Object.entries(colorList).map(([id, color],_)=>{
+            let label
+            if(coloration==ColorationStyle.Entity) label = (entities[id] as Entity).name
+            else label=id;
+            return (
+                <Grid item xs={1}>
+                    <ColorPicker label={label} color={color} onChangeComplete={(color) => setColor(id)(color)} />
+                </Grid>
+            )
+        })
     }
 
     return (

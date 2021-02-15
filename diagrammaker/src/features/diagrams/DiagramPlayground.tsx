@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactInstance, RefObject, useRef } from 'react'
 import { Entity } from '../elements/entitySlice'
 import { Link } from '../elements/linksSlice';
 import { DiagramType, DiagramSettingsState } from './diagramSettingsSlice';
@@ -10,7 +10,6 @@ export interface DiagramProps {
 }
 
 export interface DiagramPlaygroundProps extends DiagramProps, DiagramSettingsState{
-
 }
 
 export interface DiagramEntity extends Entity {

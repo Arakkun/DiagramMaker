@@ -70,6 +70,7 @@ export const {
     selectAll: selectAllEntities,
     selectById: selectEntitiesById,
     selectIds: selectEntitiesIds,
+    selectEntities: selectEntityDictionary,
   } = entitiesAdapter.getSelectors<RootState>((state) => state.entities)
 
 export function useEntity(entityId:string){

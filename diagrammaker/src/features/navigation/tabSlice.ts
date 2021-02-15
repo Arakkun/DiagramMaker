@@ -6,7 +6,7 @@ export interface TabState {
 }
 
 const initialState: TabState = {
-  value: "home"
+  value: "elements-manager"
 };
 
 export const tabSlice = createSlice({
